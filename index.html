@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <title>interesting ball</title>
+    
+</head>
+<body>
+
+
+<canvas id="myCanvas" width='1500' height='700' onmousemove="mouseMove(event)"></canvas>
+<script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+<script>
+
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+var a=prompt("input the brickRowCount","")
+var b=prompt("input the brickColumnCount <=10","")
+var difficulty=prompt("how brave are you? easy,intermediate or hard?","")
+var selection=prompt("Is Derek handsome? yes or no?","")
+var xiaoming=new Image ()
+var derek=new Image()
+var yandiao=new Image()
+var mysun=new Image()
+xiaoming.src="https://lh5.googleusercontent.com/-Bj2yJzkyzqI/VkvgjN2WYhI/AAAAAAAAAAs/q-TV4tXcuFI/w871-h874-no/IMG_2159.JPG"
+derek.src="https://lh4.googleusercontent.com/-Rh7nL-jkITw/VkvgvAiaJHI/AAAAAAAAAB8/DVLk9GDyHW8/w632-h722-no/IMG_2162.JPG"
+yandiao.src="https://lh6.googleusercontent.com/-r3CyjGv3hKE/Vkvg4V7Aa2I/AAAAAAAAACo/yZalv4LQOa4/w660-h880-no/IMG_2161.JPG"
+mysun.src="https://lh5.googleusercontent.com/-bBcDIQLH2QA/VkvgrkDLn1I/AAAAAAAAABU/TLBSwojrUFg/w159-h198-no/IMG_2160.JPG"
+ 
+if (selection!="yes"){
+    alert("You do not have the right to play it!!")
+    halt
+}
+if (difficulty==="easy"){
+    dx=Math.random()*2+1
+    dy=-Math.random()*5-1}
+    else if (difficulty==="intermediate"){
+        dx=Math.random()*2+5
+        dy=-Math.random()*5-5
+    }
+    else if (difficulty==="hard"){
+        dx=Math.random()*2+10
+        dy=-Math.random()*5-10
+    }
+var ballRadius = 10;
+var x = canvas.width/2;
+var y = canvas.height-30;
+var paddleHeight = 10;
+var paddleWidth = 100;
+var paddleX = (canvas.width-paddleWidth)/2;
+var paddleXSpeed=0
+var brickRowCount = a;
+var brickColumnCount = b;
+var brickWidth = 80;
+var brickHeight = 20;
+var brickPadding = 10;
+var brickOffsetTop = 20
+var brickOffsetLeft = (1510-85*a)/2
+var score = 0;
+var lives = 3;
+var color=["blue","green","red","orange","purple"]
+duli=color.length
+ i=Math.floor(Math.random()*duli)
+    h=color[i]
+$("body").click(function(){
+    
+    i=Math.floor(Math.random()*duli)
+    h=color[i]
+})
+var bricks = [];
+
+
+for(c=0; c<brickColumnCount; c++) {
+    bricks[c] = [];
+    for(d=0; d<brickRowCount; d++) {
+        bricks[c][d] = { flag: 1};
+    
+    }
+}
+for (j=0;j<16;j++){
+    k=Math.floor(Math.random()*c)
+    l=Math.floor(Math.random()*d)
+   
+ bricks[k][l]={flag:2} ;
+}
+
+var control={39:"right",37:"left",32:"stop"}
+var direction=function(Control){
+    if (Control==="right"&&paddleX < canvas.width-paddleWidth){
+        paddleXSpeed=30
+        paddleX+=paddleXSpeed
+    }
+    else if (Control==="left"&&paddleX>0){
+        paddleXSpeed=-30
+        paddleX+=paddleXSpeed
+    }
+    else if(Control==="stop"){
+        dx=0
+        dy=0
+    }
+}
+$("body").keydown(function(event){
+var f=event.keyCode
+if (f===39||f===37||f===32){
+    var g=control[event.keyCode]
+    direction(g)
+}})
+
+
+
+
+function mouseMove(e) {
+     paddleX = e.clientX }
+function judgement() {
+    for(c=0; c<brickColumnCount; c++) {
+        for(d=0; d<brickRowCount; d++) {
+            var b = bricks[c][d];
+              if(b.flag === 1||b.flag===2) {
+                if(x > b.x && 
+                    x < b.x+brickWidth 
+                    && y > b.y 
+                    && y < b.y+brickHeight) {
+                    dy = -dy;
+                    b.flag -=1;
+                    score++;
+                    if(score === brickRowCount*brickColumnCount) {
+                        alert("YOU WIN!!");
+                        document.location.reload();
+                    }
+                }
+            }
+        }
+    }
+}
+
+function drawScore() {
+    ctx.font="30px Courier"
+    ctx.fillStyle = h;
+    ctx.fillText("Score: "+score, 10, 500);
+}
+function drawLives() {
+    ctx.font="30px Courier"
+    ctx.fillStyle = h;
+    ctx.fillText("Lives: "+lives, canvas.width-200, 500);
+}
+function drawcanvas(){
+    ctx.beginPath()
+    ctx.strokeRect(0,0,canvas.width,canvas.height)
+    ctx.stroke()
+}
+
+function drawBall() {
+    ctx.beginPath();
+    ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+    ctx.fillStyle = h;
+    ctx.fill();
+    ctx.closePath();
+}
+
+function drawPaddle() {
+    ctx.beginPath();
+    ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle = h;
+    ctx.fill();
+    ctx.closePath();
+}
+function drawBricks() {
+    for(c=0; c<brickColumnCount; c++) {
+        for(d=0; d<brickRowCount; d++) {
+            if(bricks[c][d].flag === 1||bricks[c][d].flag===2) {
+                var brickX = (d*(brickWidth+brickPadding))+brickOffsetLeft;
+                var brickY = (c*(brickHeight+brickPadding))+brickOffsetTop;
+                bricks[c][d].x = brickX;
+                bricks[c][d].y = brickY;
+              
+               if (bricks[c][d].flag===1){
+                    ctx.beginPath()
+                    ctx.rect(brickX,brickY,brickWidth,brickHeight)
+                    ctx.fillStyle = h;
+                    ctx.fill()
+                    ctx.closePath()}
+                else if (bricks[c][d].flag===2)
+                {   ctx.beginPath()
+                    ctx.rect(brickX,brickY,brickWidth,brickHeight)
+                    ctx.fillStyle = "black";
+                    ctx.fill()
+                    ctx.closePath()}
+                    
+                    
+                }
+                 
+
+                }
+                
+            }
+        }
+    
+
+
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+     ctx.drawImage(xiaoming,200,400,200,200)
+    ctx.drawImage(derek,500,400,200,200)
+    ctx.drawImage(mysun,800,400,200,200)
+    ctx.drawImage(yandiao,1100,400,200,200)
+     drawScore();
+    drawLives();
+    drawBricks();
+    drawBall();
+    
+    drawPaddle();
+    drawcanvas();
+    judgement()
+    
+    
+    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+        dx = -dx;
+    }
+    if(y + dy < ballRadius) {
+        dy = -dy;
+    }
+    else if(y + dy > canvas.height-ballRadius) {
+        if(x > paddleX && x < paddleX + paddleWidth) {
+            if (paddleXSpeed>0&&dx>0){
+                dy=-dy
+            }
+              else if(paddleXSpeed>0&&dx<0){
+                dx=-dx
+                dy=-dy
+              }
+                 else if(paddleXSpeed<0&&dx>0){
+                    dx=-dx
+                    dy=-dy
+                 }
+                   else if (paddleXSpeed<0&&dx<0){
+                    dy=-dy
+                   }}
+            
+
+        else {
+            lives--;
+            if(!lives) {
+                alert("GAME OVER");
+                document.location.reload();
+            }
+            else {
+                x = canvas.width/2;
+                y = canvas.height-30;
+               if (difficulty==="easy"){
+    dx=Math.random()*2+1
+    dy=-Math.random()*5-1}
+    else if (difficulty==="intermediate"){
+        dx=Math.random()*6+1
+        dy=-Math.random()*10-1
+    }
+    else if (difficulty==="hard"){
+        dx=Math.random()*10+1
+        dy=-Math.random()*15-1
+    }
+                paddleX = (canvas.width-paddleWidth)/2;
+            }
+        }
+    }
+    
+  
+    
+    x += dx;
+    y += dy;
+    
+}
+
+setInterval(function(){
+    
+
+    draw()
+    ctx.strokeRect(0,0,canvas.width,canvas.height)
+   
+},20)
+</script>
+</body>
+</html>
